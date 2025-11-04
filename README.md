@@ -24,7 +24,7 @@ Module này tự động khám phá schema của cơ sở dữ liệu SQL, tríc
 ## Cài đặt
 
 ```bash
-npm install git+https://[your-git-host].com/[your-username]/[your-repo-name].git
+npm install git+https://github.com/baoOyster/sql-to-pinecone.git
 ```
 
 ### Dependencies
