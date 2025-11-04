@@ -24,7 +24,7 @@ Module này tự động khám phá schema của cơ sở dữ liệu SQL, tríc
 ## Cài đặt
 
 ```bash
-npm install sql-to-pinecone-vector
+npm install git+https://[your-git-host].com/[your-username]/[your-repo-name].git
 ```
 
 ### Dependencies
@@ -156,7 +156,7 @@ Module tự động phát hiện các kiểu cột văn bản sau:
 
 1. Tạo tài khoản Pinecone tại [pinecone.io](https://www.pinecone.io/)
 2. Tạo một index với các thiết lập sau:
-   - **Dimensions**: 768 (cho model `llama-text-embed-v2`)
+   - **Dimensions**: 1024 (cho model `llama-text-embed-v2`)
    - **Metric**: cosine (khuyến nghị)
 3. Lấy API key của bạn từ Pinecone console
 
@@ -166,7 +166,7 @@ Module tự động phát hiện các kiểu cột văn bản sau:
 - Các bảng nên có primary keys được định nghĩa
 - Ít nhất một cột text phải tồn tại trong các bảng bạn muốn vector hóa
 
-## Cấu hình cho Development
+## Dành cho người bảo trì(Maintainer)
 
 ### Chạy trong môi trường Development
 
@@ -212,7 +212,7 @@ Database connection closed.
 - Các bảng không có cột text sẽ tự động bị bỏ qua
 - Các bảng hệ thống và extensions (như `pg_stat_statements`, `spatial_ref_sys`) được lọc ra
 - Kích thước batch cố định là 100 bản ghi mỗi embedding request
-- Sử dụng model `llama-text-embed-v2` của Pinecone (768 dimensions)
+- Sử dụng model `llama-text-embed-v2` của Pinecone (1024 dimensions)
 - Text sẽ bị cắt từ cuối nếu vượt quá giới hạn của model
 
 ## Xử lý Lỗi
@@ -244,7 +244,7 @@ Module bao gồm xử lý lỗi toàn diện:
 
 ### Không khớp Dimension của Index
 
-Đảm bảo Pinecone index của bạn có 768 dimensions cho model `llama-text-embed-v2`.
+Đảm bảo Pinecone index của bạn có 1024 dimensions cho model `llama-text-embed-v2`.
 
 ### Thiếu Cột Text
 
