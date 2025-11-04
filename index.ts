@@ -243,7 +243,6 @@ const sqlToPinecone = async (
 
       const stream = db(tableName).select("*").stream();
 
-      // 4. USE THE NEW TYPE for the batch
       let batchToEmbed: RecordToEmbed[] = [];
       const BATCH_SIZE = 100;
 
@@ -257,32 +256,26 @@ const sqlToPinecone = async (
           continue;
         }
 
-        // Add the text to the metadata field you specified
         const metadata = row;
         metadata[embeddingTextField] = textToEmbed;
 
-        // 5. ADD TO THE TEMPORARY BATCH
         batchToEmbed.push({
           id: String(row[tableSchema.primaryKey]),
           text: textToEmbed,
           metadata: metadata,
         });
 
-        // 6. PROCESS THE BATCH when full
         if (batchToEmbed.length >= BATCH_SIZE) {
           console.log(
             `Embedding and upserting batch of ${batchToEmbed.length} to namespace '${tableName}'`
           );
 
-          // --- THE TWO-STEP PROCESS ---
-          // 1. Embed texts
           const texts = batchToEmbed.map((r) => r.text);
           const embeddings = await pc.inference.embed(modelName, texts, {
             inputType: "passage",
             truncate: "END",
           });
 
-          // 2. Create records with vectors
           const upsertBatch: PineconeRecord[] = batchToEmbed.map(
             (record, i) => ({
               id: record.id,
@@ -291,38 +284,30 @@ const sqlToPinecone = async (
             })
           );
 
-          // 3. Upsert
           await namespace.upsert(upsertBatch);
-          // --- END TWO-STEP PROCESS ---
 
-          batchToEmbed = []; // Clear the batch
+          batchToEmbed = []; 
         }
       }
 
-      // 7. PROCESS THE FINAL BATCH
       if (batchToEmbed.length > 0) {
         console.log(
           `Embedding and upserting final batch of ${batchToEmbed.length} to namespace '${tableName}'`
         );
 
-        // --- THE TWO-STEP PROCESS ---
-        // 1. Embed texts
         const texts = batchToEmbed.map((r) => r.text);
         const embeddings = await pc.inference.embed(modelName, texts, {
           inputType: "passage",
           truncate: "END",
         });
 
-        // 2. Create records with vectors
         const upsertBatch: PineconeRecord[] = batchToEmbed.map((record, i) => ({
           id: record.id,
           values: (embeddings.data[i] as any).values,
           metadata: record.metadata,
         }));
 
-        // 3. Upsert
         await namespace.upsert(upsertBatch);
-        // --- END TWO-STEP PROCESS ---
       }
 
       console.log(`✅ Finished processing table '${tableName}'.`);
