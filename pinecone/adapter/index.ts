@@ -18,6 +18,8 @@ interface DatabaseSchema {
 }
 
 class Adapter {
+    private connectionString: string = process.env.DB_CONNECTION_STRING || "";
+    private filename: string = process.env.SQLITE_DB_FILE || ":memory:";
     private connection: any;
     private connectionType: "sqlite" | "postgres" | "mysql" | "mssql";
 
@@ -29,16 +31,16 @@ class Adapter {
     private onInit() {
         switch (this.connectionType) {
             case "postgres":
-                this.connection = new PostgresConnection();
+                this.connection = new PostgresConnection({ connectionString: this.connectionString });
                 break;
             case "mysql":
-                this.connection = new MySQLConnection();
+                this.connection = new MySQLConnection({ connectionString: this.connectionString });
                 break;
             case "mssql":
-                this.connection = new SQLServerConnection();
+                this.connection = new SQLServerConnection({ connectionString: this.connectionString });
                 break;
             case "sqlite":
-                this.connection = new SQLiteConnection();
+                this.connection = new SQLiteConnection({ filename: this.filename });
                 break;
 
             default:
